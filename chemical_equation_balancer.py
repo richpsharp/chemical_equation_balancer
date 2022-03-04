@@ -33,6 +33,20 @@ def main():
     # chemical_regular_expression = (
     #     '[A-Z]')
 
+    # loop while atom counts !=
+    #   pick first atom count that is != and calculate least common multiple ? what if there are two molecules
+    # look at all molecule factors and simplify out common multiples
+
+
+def calculate_atom_counts(molecule_count):
+    """Calculate the number of atoms given the molecules and their counts.
+
+    Args:
+        molecule_count (dict): mapping molecule to integer constant
+
+    """
+    pass
+
 
 if __name__ == '__main__':
     main()
