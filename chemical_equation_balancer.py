@@ -22,11 +22,8 @@ def main():
             molecule_regular_expression = '([A-Z][a-z]?)([1-9]*)'
             atoms = re.findall(molecule_regular_expression, molecule)
             for atom, count in atoms:
-                print(atom)
                 atom_set.add(atom)
         print(f'{molecule}: {atoms}')
-    print(left_set)
-    print(right_set)
     if left_set-right_set != set():
         print(f'ERROR: there are atoms on the left side that are not on the right side of the equation: {left_set-right_set}')
         return
