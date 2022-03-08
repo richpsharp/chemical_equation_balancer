@@ -49,7 +49,7 @@ def main():
         for offset, sign_factor, molecule_list in [
                 (0, 1, left_molecule_list),
                 (len(left_molecule_list), -1, right_molecule_list)]:
-            for col_index, molecule in enumerate(left_molecule_list):
+            for col_index, molecule in enumerate(molecule_list):
                 for mol_atom, count in molecule:
                     if mol_atom == atom:
                         matrix[row_index, col_index+offset] += count*sign_factor
@@ -59,7 +59,8 @@ def main():
     print(matrix)
     print(b)
     print(c)
-    constants = scipy.optimize.linprog(c, A_eq=matrix, b_eq=b)
+    print(right_molecule_list)
+    constants = scipy.optimize.linprog(c, A_eq=matrix, b_eq=b, bounds=[(1, None) for _ in range(n_molecules)])
 
     print(constants)
             #matrix[row_index, col_index] =
