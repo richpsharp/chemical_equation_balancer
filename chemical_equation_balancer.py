@@ -26,8 +26,9 @@ def main():
             (left_molecule_list, left_set, left.split('+')),
             (right_molecule_list, right_set, right.split('+'))]:
         for molecule in molecule_string:
-            molecule_regular_expression = '([A-Z][a-z]?)([1-9]*)'
+            molecule_regular_expression = '([A-Z][a-z]?)([1-9]*[0-9]*)'
             atoms = re.findall(molecule_regular_expression, molecule)
+            print(atoms)
             atom_list = []
             for atom, count in atoms:
                 if count == '':
@@ -59,6 +60,7 @@ def main():
     print(matrix)
     print(b)
     print(c)
+    print(left_molecule_list)
     print(right_molecule_list)
     constants = scipy.optimize.linprog(c, A_eq=matrix, b_eq=b, bounds=[(1, None) for _ in range(n_molecules)])
 
