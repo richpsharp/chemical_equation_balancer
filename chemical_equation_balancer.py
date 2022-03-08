@@ -42,8 +42,6 @@ def main():
         return
     if right_set-left_set != set():
         print(f'ERROR: there are atoms on the left side that are not on the right side of the equation: {right_set-left_set}')
-    print(left_molecule_list)
-    print(right_molecule_list)
     n_molecules = len(left_molecule_list)+len(right_molecule_list)
     matrix = numpy.zeros((len(atom_set), n_molecules))
     # rows should be atoms, columns are molecules
@@ -55,10 +53,12 @@ def main():
                 for mol_atom, count in molecule:
                     if mol_atom == atom:
                         matrix[row_index, col_index+offset] += count*sign_factor
-    print(atom_set)
-    print(matrix)
-    b = numpy.zeros((n_molecules))
+    b = numpy.zeros((len(atom_set),))
     c = numpy.ones(n_molecules)
+
+    print(matrix)
+    print(b)
+    print(c)
     constants = scipy.optimize.linprog(c, A_eq=matrix, b_eq=b)
 
     print(constants)
