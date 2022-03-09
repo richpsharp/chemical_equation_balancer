@@ -12,6 +12,9 @@ import numpy
 import numpy.linalg
 import scipy.optimize
 
+# TODO: account for ( ) in molecule formulae
+# TODO: check for malformed equations
+
 
 def main():
     equation = ''.join(sys.argv[1:])
