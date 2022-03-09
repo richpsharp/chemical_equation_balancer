@@ -6,6 +6,7 @@ Represent as
 """
 import re
 import sys
+import warnings
 
 import numpy
 import numpy.linalg
@@ -22,13 +23,14 @@ def main():
     left, right = equation.split('=')
     left_set, right_set = set(), set()
     left_molecule_list, right_molecule_list = [], []
-    for molecule_list, atom_set, molecule_string in [
-            (left_molecule_list, left_set, left.split('+')),
-            (right_molecule_list, right_set, right.split('+'))]:
+    left_molecule_str_list, right_molecule_str_list = [], []
+    for molecule_list, molecule_str_list, atom_set, molecule_string in [
+            (left_molecule_list, left_molecule_str_list, left_set, left.split('+')),
+            (right_molecule_list, right_molecule_str_list, right_set, right.split('+'))]:
         for molecule in molecule_string:
+            molecule_str_list.append(molecule)
             molecule_regular_expression = '([A-Z][a-z]?)([1-9]*[0-9]*)'
             atoms = re.findall(molecule_regular_expression, molecule)
-            print(atoms)
             atom_list = []
             for atom, count in atoms:
                 if count == '':
@@ -39,10 +41,13 @@ def main():
                 atom_set.add(atom)
             molecule_list.append(atom_list)
     if left_set-right_set != set():
-        print(f'ERROR: there are atoms on the left side that are not on the right side of the equation: {left_set-right_set}')
+        print(f'ERROR: there are atoms on the left side that are not on '
+              f'the right side of the equation: {left_set-right_set}')
         return
     if right_set-left_set != set():
-        print(f'ERROR: there are atoms on the left side that are not on the right side of the equation: {right_set-left_set}')
+        print(f'ERROR: there are atoms on the left side that are not on '
+              f'the right side of the equation: {right_set-left_set}')
+        return
     n_molecules = len(left_molecule_list)+len(right_molecule_list)
     matrix = numpy.zeros((len(atom_set), n_molecules))
     # rows should be atoms, columns are molecules
@@ -57,36 +62,22 @@ def main():
     b = numpy.zeros((len(atom_set),))
     c = numpy.ones(n_molecules)
 
-    print(matrix)
-    print(b)
-    print(c)
-    print(left_molecule_list)
-    print(right_molecule_list)
-    constants = scipy.optimize.linprog(c, A_eq=matrix, b_eq=b, bounds=[(1, None) for _ in range(n_molecules)])
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore')
+        constants = scipy.optimize.linprog(
+            c, A_eq=matrix, b_eq=b,
+            bounds=[(1, None) for _ in range(n_molecules)])
 
-    print(constants)
-            #matrix[row_index, col_index] =
-    # chemical_regular_expression = (
-    #     '[A-Z]')
-
-    # loop while atom counts !=
-    #   pick first atom count that is != and calculate least common multiple ? what if there are two molecules
-    # look at all molecule factors and simplify out common multiples
-
-
-def calculate_atom_counts(molecule_list):
-    """Calculate the number of atoms given the molecules and their counts.
-
-    Args:
-        molecule_list (list): list of tuple of the form
-            [(mol_count1, [(atom1, count1), (atom2, count2), ...]),
-             (mol_count2, ....)]
-
-    Returns:
-
-
-    """
-    pass
+    print('Balanced equation: ')
+    left_str = (f"""{' + '.join([
+        f'{round(c) if round(c) > 1 else str()}{molecule}'
+        for c, molecule in zip(constants.x, left_molecule_str_list)])}""")
+    right_str = (f"""{' + '.join([
+        f'{round(c) if round(c) > 1 else str()}{molecule}'
+        for c, molecule in zip(
+            constants.x[len(left_molecule_list):],
+            right_molecule_str_list)])}""")
+    print(f'{left_str} = {right_str}')
 
 
 if __name__ == '__main__':
