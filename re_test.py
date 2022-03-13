@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-from collections import defaultdict
-=======
 """Test how to tokenize and parse."""
->>>>>>> 389c816736e276cbb38418730103a27db5df72ab
+from collections import defaultdict
 import re
 
 if __name__ == '__main__':
