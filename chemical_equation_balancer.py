@@ -31,17 +31,36 @@ def main():
             (left_molecule_list, left_molecule_str_list, left_set, left.split('+')),
             (right_molecule_list, right_molecule_str_list, right_set, right.split('+'))]:
         for molecule in molecule_string:
-            molecule_str_list.append(molecule)
-            molecule_regular_expression = '([A-Z][a-z]?)([1-9]*[0-9]*)'
+            # find any parens like Ca(OH)2 and get right count
+            molecule_regular_expression = '(?:([A-Z][a-z]?)(\d*))|(?:\(((?:[A-Z][a-z]?)+)\)(\d*))'
             atoms = re.findall(molecule_regular_expression, molecule)
+
+            molecule_str_list.append(molecule)
             atom_list = []
-            for atom, count in atoms:
-                if count == '':
-                    count = 1
-                else:
-                    count = int(count)
-                atom_list.append((atom, count))
-                atom_set.add(atom)
+            for atom, count, nested_molecule, nested_count in atoms:
+                if atom != '':
+                    if count == '':
+                        count = 1
+                    else:
+                        count = int(count)
+                    atom_list.append((atom, count))
+                    atom_set.add(atom)
+                elif nested_molecule != '':
+                    # break nested atom into sub atoms
+                    nested_molecule_regular_expression = '([A-Z][a-z]?)([1-9]*[0-9]*)'
+                    atoms = re.findall(nested_molecule_regular_expression, nested_molecule)
+                    if nested_count == '':
+                        nested_count = 1
+                    else:
+                        nested_count = int(nested_count)
+                    for atom, count in atoms:
+                        if count == '':
+                            count = 1
+                        else:
+                            count = int(count)
+                        atom_list.append((atom, count*nested_count))
+                        atom_set.add(atom)
+                    pass
             molecule_list.append(atom_list)
     if left_set-right_set != set():
         print(f'ERROR: there are atoms on the left side that are not on '
